@@ -1,3 +1,14 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+body {
+  font-family: var(--font-inter);
+}
+
+h1,
+h2,
+h3,
+strong {
+  font-family: var(--font-poppins);
+}

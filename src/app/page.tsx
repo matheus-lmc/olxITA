@@ -1,10 +1,17 @@
 import Image from "next/image";
 
 import Header from "@/components/Header";
+import ListingCard from "@/components/ListingCard";
+import TypeCard from "@/components/TypeCard";
 
 import MainFigure from "@/assets/main-figure.svg";
 import AndroidFigure from "@/assets/android.svg";
-import TypeCard from "@/components/TypeCard";
+import DomesticFigure from "@/assets/domestic.svg";
+import PersonalFigure from "@/assets/personal.svg";
+import TransportFigure from "@/assets/transport.svg";
+import ServicesFigure from "@/assets/services.svg";
+import HobbiesFigure from "@/assets/hobbies.svg";
+import FreeFigure from "@/assets/free.svg";
 
 export default function Home() {
   return (
@@ -26,24 +33,27 @@ export default function Home() {
         <Image src={MainFigure} alt="Main Figure" />
       </main>
 
-      <section className="flex flex-col px-12">
+      <section className="flex flex-col px-12 py-4">
         <h2 className="text-4xl font-bold text-primary">Categorias</h2>
 
-        <div className="grid grid-cols-8 p-8 gap-10">
+        <div className="grid grid-cols-7 p-8 gap-10 justify-items-center">
           <TypeCard figure={AndroidFigure} title="Eletrônicos" />
-          <TypeCard figure={AndroidFigure} title="Eletrônicos" />
-          <TypeCard figure={AndroidFigure} title="Eletrônicos" />
-          <TypeCard figure={AndroidFigure} title="Eletrônicos" />
-          <TypeCard figure={AndroidFigure} title="Eletrônicos" />
-          <TypeCard figure={AndroidFigure} title="Eletrônicos" />
-          <TypeCard figure={AndroidFigure} title="Eletrônicos" />
-          <TypeCard figure={AndroidFigure} title="Eletrônicos" />
+          <TypeCard figure={DomesticFigure} title="Doméstico" />
+          <TypeCard figure={PersonalFigure} title="Uso Pessoal" />
+          <TypeCard figure={TransportFigure} title="Locomoção" />
+          <TypeCard figure={ServicesFigure} title="Serviços" />
+          <TypeCard figure={HobbiesFigure} title="Hobbies" />
+          <TypeCard figure={FreeFigure} title="De bizu" />
         </div>
         <h2 className="text-4xl font-bold text-primary my-4">
           Anúncios recentes
         </h2>
 
-        <div className="grid grid-cols-3 p-8 gap-10"></div>
+        <div className="grid grid-cols-3 gap-10 justify-items-center">
+          <ListingCard title="Lorem ipsium" price={7100} link="/" />
+          <ListingCard title="Lorem ipsium" price={7100} link="/" />
+          <ListingCard title="Lorem ipsium" price={7100} link="/" />
+        </div>
       </section>
     </div>
   );

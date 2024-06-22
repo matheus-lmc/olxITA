@@ -1,5 +1,6 @@
 "use client";
 import { useState, useCallback } from "react";
+import { useSession } from "next-auth/react";
 import Dropzone from "react-dropzone";
 import { MdOutlineImage } from "react-icons/md";
 
@@ -15,8 +16,16 @@ import {
 } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { redirect } from "next/navigation";
 
 export default function CreatePage() {
+  const { data: session } = useSession({
+    required: true,
+    onUnauthenticated() {
+      redirect("/api/auth/signin?callbackUrl=/create")
+    }
+  })
+
   const [images, setImages] = useState<string[]>([]);
 
   const onDrop = useCallback((acceptedFiles: File[]) => {

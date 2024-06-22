@@ -26,7 +26,7 @@ const formSchema = z
     confirmPass: z.string(),
   })
   .refine(({ confirmPass, password }) => confirmPass === password, {
-    message: "As senahs devem ser iguais",
+    message: "As senhas devem ser iguais",
     path: ["confirmPass"],
   });
 

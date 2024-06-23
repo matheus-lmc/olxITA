@@ -23,17 +23,17 @@ export const options = {
                 try {
                     const foundUser = await User.findOne({email: credentials?.email})
             
-                    if(foundUser) {
-                        console.log("User exists")
-                        const match = credentials?.password ? bcrypt.compare(credentials.password, foundUser.password) : false;
-                    
-                        if(match) {
-                            console.log("Good Pass")
-                            delete foundUser.password
-                        }
+                    if(!foundUser) {
+                        return null
                     }
-            
-                    return foundUser || null; // Return the foundUser or null
+
+                    const passswordMatch = credentials?.password ? await bcrypt.compare(credentials?.password, foundUser.password) : false
+                    
+                    if(!passswordMatch) {
+                        return null
+                    }
+
+                    return foundUser
                 } catch(err) {
                     console.log(err);
                     return null; // Return null in case of error
@@ -46,4 +46,25 @@ export const options = {
     },
     secret: process.env.NEXTAUTH_SECRET,
     debug: process.env.NODE_ENV === "development",
+    callbacks: {
+        async jwt({token, user} : {token: any, user: any}) {
+            if(user){
+                token.id = user.id
+                token.nickname = user.nickname
+                token.userClass = user.userClass
+                token.currentListings = user.currentListings
+                token.phone = user.phone
+            }    
+            return token;
+        },
+        async session({session, token} : {session: any, token: any}) {
+            session.user.id = token.id
+            session.user.nickname = token.nickname
+            session.user.userClass = token.userClass
+            session.user.currentListings = token.currentListings
+            session.user.phone = token.phone
+
+            return session;
+        }
+    }
 }

@@ -1,6 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
 
+import { useSession } from "next-auth/react";
+
 import {
   MdSearch,
   MdPersonOutline,
@@ -25,6 +27,8 @@ import {
 import Logo from "@/assets/logo.png";
 
 export default function Header() {
+  const { data: session } = useSession();
+
   return (
     <TooltipProvider delayDuration={100}>
       <div className="w-full grid grid-cols-[1fr_2fr_1fr] px-16 py-4 align-middle">
@@ -49,20 +53,37 @@ export default function Header() {
               <MdPersonOutline size={24} />
             </PopoverTrigger>
             <PopoverContent className="bg-zinc-50 flex flex-col">
-              <Link
-                className="my-2 hover:text-secondary transition-all flex items-center p-2"
-                href="/login"
-              >
-                <MdLogin className="mr-4" size={20} />
-                Logar
-              </Link>
-              <Link
-                className="my-2 hover:text-secondary transition-all flex items-center p-2"
-                href="/signup"
-              >
-                <MdPersonAdd className="mr-4" size={20} />
-                Criar conta
-              </Link>
+              {!session ? 
+                <>
+                <Link
+                  className="my-2 hover:text-secondary transition-all flex items-center p-2"
+                  href="/login"
+                >
+                  <MdLogin className="mr-4" size={20} />
+                  Logar
+                </Link>
+                <Link
+                  className="my-2 hover:text-secondary transition-all flex items-center p-2"
+                  href="/signup"
+                >
+                  <MdPersonAdd className="mr-4" size={20} />
+                  Criar conta
+                </Link>
+                </> : 
+                <>
+                <div className="my-2 p-2">
+                  Olá, {session?.user?.name}!
+                </div>
+                <Link
+                  className="my-2 hover:text-secondary transition-all flex items-center p-2"
+                  href="/api/auth/signout?callbackUrl=/"
+                >
+                  <MdLogin className="mr-4" size={20} />
+                  Sair
+                </Link>
+                </>
+              }
+              
             </PopoverContent>
           </Popover>
           <Tooltip>

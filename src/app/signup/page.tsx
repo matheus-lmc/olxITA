@@ -1,4 +1,5 @@
 "use client";
+import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -12,6 +13,7 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
+import { signIn } from "next-auth/react";
 
 const formSchema = z
   .object({
@@ -20,19 +22,25 @@ const formSchema = z
     }),
     password: z.string(),
     name: z.string(),
-    phoneNum: z.number(),
-    nickname: z.string(),
-    class: z.number(),
+    phone: z.string().transform((val) => parseInt(val, 10)).refine((val) => !isNaN(val), {
+      message: "O número de celular deve ser um número"
+    }),
+    nickname: z.string().optional(),
+    userClass: z.string().transform((val) => parseInt(val, 10)).refine((val) => !isNaN(val), {
+      message: "Número da turma inválido"
+    }),
     confirmPass: z.string(),
   })
   .refine(({ confirmPass, password }) => confirmPass === password, {
-    message: "As senahs devem ser iguais",
+    message: "As senhas devem ser iguais",
     path: ["confirmPass"],
   });
 
 type FormType = z.infer<typeof formSchema>;
 
 export default function SignUpPage() {
+  const router = useRouter()
+
   const form = useForm<FormType>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -41,10 +49,24 @@ export default function SignUpPage() {
     },
   });
 
-  function onSubmit(values: FormType) {
-    console.log(values);
-  }
+  const onSubmit = async (values : FormType) => {
+    await fetch("/api/register", {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(values)
+    })
 
+    await signIn("credentials", {
+      email: values.email,
+      password: values.password,
+      redirect: false
+    })
+    
+    router.push('/')
+  }
+  
   return (
     <div className="min-h-screen bg-zinc-100 flex flex-col">
       <Header />
@@ -92,7 +114,7 @@ export default function SignUpPage() {
             />
             <FormField
               control={form.control}
-              name="phoneNum"
+              name="phone"
               render={({ field }) => (
                 <FormItem className="my-4">
                   <FormControl>
@@ -128,7 +150,7 @@ export default function SignUpPage() {
               />
               <FormField
                 control={form.control}
-                name="class"
+                name="userClass"
                 render={({ field }) => (
                   <FormItem>
                     <FormControl>
@@ -154,6 +176,7 @@ export default function SignUpPage() {
                   <FormControl>
                     <input
                       placeholder="Senha"
+                      type="password"
                       {...field}
                       className="w-full outline-none bg-zinc-50 p-4 border-zinc-300 rounded-sm border focus:border-secondary transition-all"
                     />
@@ -170,6 +193,7 @@ export default function SignUpPage() {
                   <FormControl>
                     <input
                       placeholder="Confirmar senha"
+                      type="password"
                       {...field}
                       className="w-full outline-none bg-zinc-50 p-4 border-zinc-300 rounded-sm border focus:border-secondary transition-all"
                     />

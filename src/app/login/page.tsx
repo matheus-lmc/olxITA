@@ -1,6 +1,7 @@
 "use client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { useRouter } from "next/navigation";
 import { z } from "zod";
 import Link from "next/link";
 
@@ -12,6 +13,7 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
+import { signIn } from "next-auth/react";
 
 const formSchema = z.object({
   email: z.string().email({
@@ -23,6 +25,8 @@ const formSchema = z.object({
 type FormType = z.infer<typeof formSchema>;
 
 export default function LogInPage() {
+  const router = useRouter()
+
   const form = useForm<FormType>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -31,8 +35,17 @@ export default function LogInPage() {
     },
   });
 
-  function onSubmit(values: FormType) {
-    console.log(values);
+  async function onSubmit(values: FormType) {
+    const sign = await signIn("credentials", {
+      ...values,
+      redirect: false
+    })
+
+    if(sign?.ok) {
+      router.push("/")
+    } else {
+      alert("Email ou senha incorretos")
+    }
   }
 
   return (
@@ -73,6 +86,7 @@ export default function LogInPage() {
                   <FormControl>
                     <input
                       placeholder="Senha"
+                      type="password"
                       {...field}
                       className="w-full outline-none bg-zinc-50 p-4 border-zinc-300 rounded-sm border focus:border-secondary transition-all"
                     />

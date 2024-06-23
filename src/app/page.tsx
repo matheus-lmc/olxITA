@@ -1,3 +1,5 @@
+"use client"
+
 import Image from "next/image";
 
 import Header from "@/components/Header";
@@ -12,8 +14,38 @@ import TransportFigure from "@/assets/transport.svg";
 import ServicesFigure from "@/assets/services.svg";
 import HobbiesFigure from "@/assets/hobbies.svg";
 import FreeFigure from "@/assets/free.svg";
+import { useEffect, useState } from "react";
+
+export type ListingType = {
+  _id: string;
+  title: string;
+  price: number;
+  categories: string[];
+  description: string;
+  images: string[];
+  status: string;
+}
 
 export default function Home() {
+  const [listings, setListings] = useState<ListingType[]>([]);
+
+  useEffect(() => {
+    const fetchListings = async () => {
+      const response = await fetch("/api/listings", {
+        method: "POST",
+        body: JSON.stringify({ quantity: 3 }),
+      });
+
+      const data = await response.json();
+
+      setListings(data.listings);
+
+      console.log(data.listings)
+    }
+
+    fetchListings();
+  }, [])
+
   return (
     <div className="min-h-screen flex flex-col bg-zinc-100">
       <Header />
@@ -50,9 +82,11 @@ export default function Home() {
         </h2>
 
         <div className="grid grid-cols-3 gap-10 justify-items-center">
-          <ListingCard title="Lorem ipsium" price={7100} link="/" />
-          <ListingCard title="Lorem ipsium" price={7100} link="/" />
-          <ListingCard title="Lorem ipsium" price={7100} link="/" />
+          {listings.map((listing) => (
+            <ListingCard
+              listing={listing}
+            />
+          ))}
         </div>
       </section>
     </div>

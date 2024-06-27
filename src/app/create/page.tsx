@@ -18,6 +18,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 export default function CreatePage() {
   const { data: session } = useSession({
@@ -26,6 +27,7 @@ export default function CreatePage() {
       redirect("/login")
     }
   });
+  const router = useRouter();
 
   const [images, setImages] = useState<string[]>([]);
   const [files, setFiles] = useState<File[]>([]);
@@ -105,9 +107,10 @@ export default function CreatePage() {
         body: data
       });
 
-      const json = await response.json();
-
-      console.log(json);
+      if(response.ok) {
+        alert("Listing created successfully");
+        router.push('/');
+      }
     } catch (err) {
       console.log(err);
     }

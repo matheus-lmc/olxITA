@@ -1,10 +1,11 @@
-"use client"
+"use client";
 
 import Image from "next/image";
 
 import Header from "@/components/Header";
 import ListingCard from "@/components/ListingCard";
 import TypeCard from "@/components/TypeCard";
+import { Skeleton } from "@/components/ui/skeleton";
 
 import MainFigure from "@/assets/main-figure.svg";
 import AndroidFigure from "@/assets/android.svg";
@@ -24,27 +25,43 @@ export type ListingType = {
   description: string;
   images: string[];
   status: string;
+};
+
+enum Category {
+  "Eletrônicos" = 1,
+  "Doméstico",
+  "Uso Pessoal",
+  "Locomoção",
+  "Serviços",
+  "Hobbies",
+  "De bizu",
 }
 
 export default function Home() {
   const [listings, setListings] = useState<ListingType[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [selected, setSelected] = useState(0);
 
   useEffect(() => {
     const fetchListings = async () => {
-      const response = await fetch("/api/listings", {
-        method: "POST",
-        body: JSON.stringify({ quantity: 3 }),
-      });
+      const response = await fetch(
+        `/api/listings?quantity=3${
+          selected !== 0 ? `&category=${Category[selected]}` : ""
+        }`,
+        {
+          method: "GET",
+        }
+      );
 
       const data = await response.json();
 
-      setListings(data.listings);
+      setLoading(false);
 
-      console.log(data.listings)
-    }
+      setListings(data.listings);
+    };
 
     fetchListings();
-  }, [])
+  }, [selected]);
 
   return (
     <div className="min-h-screen flex flex-col bg-zinc-100">
@@ -69,24 +86,62 @@ export default function Home() {
         <h2 className="text-4xl font-bold text-primary">Categorias</h2>
 
         <div className="grid grid-cols-7 p-8 gap-10 justify-items-center">
-          <TypeCard figure={AndroidFigure} title="Eletrônicos" />
-          <TypeCard figure={DomesticFigure} title="Doméstico" />
-          <TypeCard figure={PersonalFigure} title="Uso Pessoal" />
-          <TypeCard figure={TransportFigure} title="Locomoção" />
-          <TypeCard figure={ServicesFigure} title="Serviços" />
-          <TypeCard figure={HobbiesFigure} title="Hobbies" />
-          <TypeCard figure={FreeFigure} title="De bizu" />
+          <TypeCard
+            figure={AndroidFigure}
+            title="Eletrônicos"
+            selected={selected === 1}
+            onClick={() => setSelected(selected === 1 ? 0 : 1)}
+          />
+          <TypeCard
+            figure={DomesticFigure}
+            title="Doméstico"
+            selected={selected === 2}
+            onClick={() => setSelected(selected === 2 ? 0 : 2)}
+          />
+          <TypeCard
+            figure={PersonalFigure}
+            title="Uso Pessoal"
+            selected={selected === 3}
+            onClick={() => setSelected(selected === 3 ? 0 : 3)}
+          />
+          <TypeCard
+            figure={TransportFigure}
+            title="Locomoção"
+            selected={selected === 4}
+            onClick={() => setSelected(selected === 4 ? 0 : 4)}
+          />
+          <TypeCard
+            figure={ServicesFigure}
+            title="Serviços"
+            selected={selected === 5}
+            onClick={() => setSelected(selected === 5 ? 0 : 5)}
+          />
+          <TypeCard
+            figure={HobbiesFigure}
+            title="Hobbies"
+            selected={selected === 6}
+            onClick={() => setSelected(selected === 6 ? 0 : 6)}
+          />
+          <TypeCard
+            figure={FreeFigure}
+            title="De bizu"
+            selected={selected === 7}
+            onClick={() => setSelected(selected === 7 ? 0 : 7)}
+          />
         </div>
         <h2 className="text-4xl font-bold text-primary my-4">
           Anúncios recentes
         </h2>
 
         <div className="grid grid-cols-3 gap-10 justify-items-center">
-          {listings.map((listing) => (
-            <ListingCard
-              listing={listing}
-            />
-          ))}
+          {!loading
+            ? listings.map((listing) => <ListingCard listing={listing} />)
+            : Array.from(Array(3).keys()).map((_el, index) => (
+                <Skeleton
+                  className="h-64 w-48 rounded-xl bg-zinc-400"
+                  key={index}
+                />
+              ))}
         </div>
       </section>
     </div>

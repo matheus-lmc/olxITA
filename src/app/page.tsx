@@ -45,7 +45,7 @@ export type UserType = {
   nickname: string;
   userClass: string;
   currentListings: string[];
-}
+};
 
 export default function Home() {
   const [listings, setListings] = useState<ListingType[]>([]);
@@ -143,9 +143,11 @@ export default function Home() {
           Anúncios recentes
         </h2>
 
-        <div className="grid grid-cols-3 gap-10 justify-items-left">
+        <div className="grid grid-cols-3 gap-10 justify-items-center">
           {!loading
-            ? listings.map((listing) => <ListingCard listing={listing} />)
+            ? listings.map((listing) => (
+                <ListingCard key={listing._id} listing={listing} />
+              ))
             : Array.from(Array(3).keys()).map((_el, index) => (
                 <Skeleton
                   className="h-64 w-48 rounded-xl bg-zinc-400"

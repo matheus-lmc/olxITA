@@ -37,6 +37,16 @@ enum Category {
   "De bizu",
 }
 
+export type UserType = {
+  _id: string;
+  name: string;
+  email: string;
+  phone: string;
+  nickname: string;
+  userClass: string;
+  currentListings: string[];
+}
+
 export default function Home() {
   const [listings, setListings] = useState<ListingType[]>([]);
   const [loading, setLoading] = useState(true);
@@ -133,7 +143,7 @@ export default function Home() {
           Anúncios recentes
         </h2>
 
-        <div className="grid grid-cols-3 gap-10 justify-items-center">
+        <div className="grid grid-cols-3 gap-10 justify-items-left">
           {!loading
             ? listings.map((listing) => <ListingCard listing={listing} />)
             : Array.from(Array(3).keys()).map((_el, index) => (
